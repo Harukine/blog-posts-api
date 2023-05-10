@@ -6,6 +6,9 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "db:rm": "docker compose rm db --force --stop --volumes",
+    "db:up": "docker compose up db --detach",
+    "db:restart": "run-s db:rm db:up",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
