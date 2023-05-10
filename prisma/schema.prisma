@@ -9,3 +9,19 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id    Int   @id @default(autoincrement())
+  name  String
+  posts Post[]
+  @@map("users")
+}
+
+model Post {
+  id    Int   @id @default(autoincrement())
+  content String @db.VarChar(512)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+  @@index([userId])
+  @@map("posts")
+}
