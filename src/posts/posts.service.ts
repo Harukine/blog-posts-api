@@ -1,7 +1,20 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
+
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PrismaService } from '../prisma/prisma.service';
+
+const selectPostValidator = Prisma.validator<Prisma.PostSelect>()({
+  id: true,
+  content: true,
+  user: {
+    select: {
+      id: true,
+      name: true,
+    },
+  },
+});
 
 @Injectable()
 export class PostsService {
@@ -27,32 +40,14 @@ export class PostsService {
 
   findAll() {
     return this.prisma.post.findMany({
-      select: {
-        id: true,
-        content: true,
-        user: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-      },
+      select: selectPostValidator,
     });
   }
 
   findOne(id: number) {
     return this.prisma.post.findUnique({
       where: { id },
-      select: {
-        id: true,
-        content: true,
-        user: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-      },
+      select: selectPostValidator,
     });
   }
 
