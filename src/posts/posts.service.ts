@@ -41,7 +41,19 @@ export class PostsService {
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} post`;
+    return this.prisma.post.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        content: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
   }
 
   update(id: number, updatePostDto: UpdatePostDto) {
