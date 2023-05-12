@@ -26,7 +26,7 @@ export class PostsService {
   }
 
   findAll() {
-    return `This action returns all posts`;
+    return this.prisma.post.findMany();
   }
 
   findOne(id: number) {
