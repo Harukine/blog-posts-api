@@ -5,6 +5,22 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PrismaService } from '../prisma/prisma.service';
 
+const createPostValidator = (content: string, id: number, name: string) => {
+  const user = {
+    id,
+    name,
+  };
+  return Prisma.validator<Prisma.PostCreateInput>()({
+    content,
+    user: {
+      connectOrCreate: {
+        where: { id: user.id },
+        create: user,
+      },
+    },
+  });
+};
+
 const selectPostValidator = Prisma.validator<Prisma.PostSelect>()({
   id: true,
   content: true,
@@ -21,20 +37,10 @@ export class PostsService {
   constructor(private readonly prisma: PrismaService) {}
 
   create(createPostDto: CreatePostDto) {
-    const {
-      content,
-      user: { name: user, id },
-    } = createPostDto;
+    const { content, user } = createPostDto;
     return this.prisma.post.create({
-      data: {
-        content,
-        user: {
-          connectOrCreate: {
-            where: { id },
-            create: { name: user },
-          },
-        },
-      },
+      data: createPostValidator(content, user.id, user.name),
+      select: selectPostValidator,
     });
   }
 
@@ -52,21 +58,11 @@ export class PostsService {
   }
 
   update(id: number, updatePostDto: UpdatePostDto) {
-    const {
-      content,
-      user: { name: user },
-    } = updatePostDto;
+    const { content, user } = updatePostDto;
     return this.prisma.post.update({
       where: { id },
-      data: {
-        content,
-        user: {
-          connectOrCreate: {
-            where: { id },
-            create: { name: user },
-          },
-        },
-      },
+      data: createPostValidator(content, user.id, user.name),
+      select: selectPostValidator,
     });
   }
 
