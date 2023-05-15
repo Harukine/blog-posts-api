@@ -52,7 +52,22 @@ export class PostsService {
   }
 
   update(id: number, updatePostDto: UpdatePostDto) {
-    return `This action updates a #${id} post`;
+    const {
+      content,
+      user: { name: user },
+    } = updatePostDto;
+    return this.prisma.post.update({
+      where: { id },
+      data: {
+        content,
+        user: {
+          connectOrCreate: {
+            where: { id },
+            create: { name: user },
+          },
+        },
+      },
+    });
   }
 
   remove(id: number) {
